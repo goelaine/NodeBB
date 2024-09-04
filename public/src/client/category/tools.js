@@ -16,46 +16,56 @@ define('forum/category/tools', [
 		topicSelect.init(updateDropdownOptions);
 
 		handlePinnedTopicSort();
+		observeTopicLabelsFunc();
+		getComponents();
+	
+	};
 
-		$('[component="category/topic"]').each((index, el) => {
-			threadTools.observeTopicLabels($(el).find('[component="topic/labels"]'));
-		});
+		function observeTopicLabelsFunc(){
+			$('[component="category/topic"]').each((index, el) => {
+				threadTools.observeTopicLabels($(el).find('[component="topic/labels"]'));
+			});
+		}
 
-		components.get('topic/delete').on('click', function () {
-			categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
-			return false;
-		});
+		function getComponents(){
+			components.get('topic/delete').on('click', function () {
+				categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
+				return false;
+			});
+	
+			components.get('topic/restore').on('click', function () {
+				categoryCommand('put', '/state', 'restore', onDeleteRestoreComplete);
+				return false;
+			});
+	
+			components.get('topic/purge').on('click', function () {
+				categoryCommand('del', '', 'purge', onPurgeComplete);
+				return false;
+			});
+	
+			components.get('topic/lock').on('click', function () {
+				categoryCommand('put', '/lock', 'lock', onCommandComplete);
+				return false;
+			});
+	
+			components.get('topic/unlock').on('click', function () {
+				categoryCommand('del', '/lock', 'unlock', onCommandComplete);
+				return false;
+			});
+	
+			components.get('topic/pin').on('click', function () {
+				categoryCommand('put', '/pin', 'pin', onCommandComplete);
+				return false;
+			});
+	
+			components.get('topic/unpin').on('click', function () {
+				categoryCommand('del', '/pin', 'unpin', onCommandComplete);
+				return false;
+			});
+	
+		}
 
-		components.get('topic/restore').on('click', function () {
-			categoryCommand('put', '/state', 'restore', onDeleteRestoreComplete);
-			return false;
-		});
-
-		components.get('topic/purge').on('click', function () {
-			categoryCommand('del', '', 'purge', onPurgeComplete);
-			return false;
-		});
-
-		components.get('topic/lock').on('click', function () {
-			categoryCommand('put', '/lock', 'lock', onCommandComplete);
-			return false;
-		});
-
-		components.get('topic/unlock').on('click', function () {
-			categoryCommand('del', '/lock', 'unlock', onCommandComplete);
-			return false;
-		});
-
-		components.get('topic/pin').on('click', function () {
-			categoryCommand('put', '/pin', 'pin', onCommandComplete);
-			return false;
-		});
-
-		components.get('topic/unpin').on('click', function () {
-			categoryCommand('del', '/pin', 'unpin', onCommandComplete);
-			return false;
-		});
-
+		
 		// todo: should also use categoryCommand, but no write api call exists for this yet
 		components.get('topic/mark-unread-for-all').on('click', function () {
 			const tids = topicSelect.getSelectedTids();
@@ -137,7 +147,7 @@ define('forum/category/tools', [
 		socket.on('event:topic_pinned', setPinnedState);
 		socket.on('event:topic_unpinned', setPinnedState);
 		socket.on('event:topic_moved', onTopicMoved);
-	};
+
 
 	function categoryCommand(method, path, command, onComplete) {
 		if (!onComplete) {
