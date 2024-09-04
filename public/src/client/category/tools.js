@@ -347,6 +347,6 @@ define('forum/category/tools', [
 				},
 			});
 		});
-	} 
+	}
 	return CategoryTools;
 });
