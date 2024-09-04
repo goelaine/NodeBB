@@ -17,7 +17,7 @@ define('forum/category/tools', [
 
 		handlePinnedTopicSort();
 		observeTopicLabelsFunc();
-		getComponents();
+		eventHandlers();
 	
 	};
 
@@ -27,7 +27,7 @@ define('forum/category/tools', [
 			});
 		}
 
-		function getComponents(){
+		function eventHandlers(){
 			components.get('topic/delete').on('click', function () {
 				categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
 				return false;
