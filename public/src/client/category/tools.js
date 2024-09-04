@@ -15,10 +15,13 @@ define('forum/category/tools', [
 	CategoryTools.init = function () {
 		topicSelect.init(updateDropdownOptions);
 
+		console.log("Elaine");
+
 		handlePinnedTopicSort();
 		observeTopicLabelsFunc()
 		eventHandlers();
 		resetEventListeners();
+
 		
 	};
 
