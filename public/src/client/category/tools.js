@@ -14,7 +14,7 @@ define('forum/category/tools', [
 
 	CategoryTools.init = function () {
 		topicSelect.init(updateDropdownOptions);
-
+		print("YO THIS IS ELAINE");
 		handlePinnedTopicSort();
 		observeTopicLabelsFunc();
 		eventHandlers();
