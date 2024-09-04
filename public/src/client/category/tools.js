@@ -139,6 +139,12 @@ define('forum/category/tools', [
 		socket.on('event:topic_moved', onTopicMoved);
 	};
 	
+	function observeTopicLabelsFunc(){
+		$('[component="category/topic"]').each((index, el) => {
+			threadTools.observeTopicLabels($(el).find('[component="topic/labels"]'));
+		});
+	}
+
 	function eventHandlers(){
 		components.get('topic/delete').on('click', function () {
 			categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
