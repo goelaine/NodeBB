@@ -139,6 +139,8 @@ define('forum/category/tools', [
 		socket.on('event:topic_moved', onTopicMoved);
 	};
 
+
+	//STOP REFACTOR HERE
 	function categoryCommand(method, path, command, onComplete) {
 		if (!onComplete) {
 			onComplete = function () {};
@@ -338,7 +340,7 @@ define('forum/category/tools', [
 				},
 			});
 		});
-	}
+	} 
 
 	return CategoryTools;
 });
