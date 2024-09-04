@@ -139,6 +139,18 @@ define('forum/category/tools', [
 		socket.on('event:topic_moved', onTopicMoved);
 	};
 
+	function resetEventListeners(){
+		CategoryTools.removeListeners();
+		socket.on('event:topic_deleted', setDeleteState);
+		socket.on('event:topic_restored', setDeleteState);
+		socket.on('event:topic_purged', onTopicPurged);
+		socket.on('event:topic_locked', setLockedState);
+		socket.on('event:topic_unlocked', setLockedState);
+		socket.on('event:topic_pinned', setPinnedState);
+		socket.on('event:topic_unpinned', setPinnedState);
+		socket.on('event:topic_moved', onTopicMoved);
+	}
+
 
 	//STOP REFACTOR HERE
 	function categoryCommand(method, path, command, onComplete) {
