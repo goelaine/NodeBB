@@ -138,6 +138,118 @@ define('forum/category/tools', [
 		socket.on('event:topic_unpinned', setPinnedState);
 		socket.on('event:topic_moved', onTopicMoved);
 	};
+	
+	function eventHandlers(){
+		components.get('topic/delete').on('click', function () {
+			categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
+			return false;
+		});
+
+		components.get('topic/restore').on('click', function () {
+			categoryCommand('put', '/state', 'restore', onDeleteRestoreComplete);
+			return false;
+		});
+
+		components.get('topic/purge').on('click', function () {
+			categoryCommand('del', '', 'purge', onPurgeComplete);
+			return false;
+		});
+
+		components.get('topic/lock').on('click', function () {
+			categoryCommand('put', '/lock', 'lock', onCommandComplete);
+			return false;
+		});
+
+		components.get('topic/unlock').on('click', function () {
+			categoryCommand('del', '/lock', 'unlock', onCommandComplete);
+			return false;
+		});
+
+		components.get('topic/pin').on('click', function () {
+			categoryCommand('put', '/pin', 'pin', onCommandComplete);
+			return false;
+		});
+
+		components.get('topic/unpin').on('click', function () {
+			categoryCommand('del', '/pin', 'unpin', onCommandComplete);
+			return false;
+		});
+
+		// todo: should also use categoryCommand, but no write api call exists for this yet
+		components.get('topic/mark-unread-for-all').on('click', function () {
+			const tids = topicSelect.getSelectedTids();
+			if (!tids.length) {
+				return alerts.error('[[error:no-topics-selected]]');
+			}
+			socket.emit('topics.markAsUnreadForAll', tids, function (err) {
+				if (err) {
+					return alerts.error(err);
+				}
+				alerts.success('[[topic:markAsUnreadForAll.success]]');
+				tids.forEach(function (tid) {
+					$('[component="category/topic"][data-tid="' + tid + '"]').addClass('unread');
+				});
+				onCommandComplete();
+			});
+			return false;
+		});
+
+		components.get('topic/move').on('click', function () {
+			require(['forum/topic/move'], function (move) {
+				const tids = topicSelect.getSelectedTids();
+
+				if (!tids.length) {
+					return alerts.error('[[error:no-topics-selected]]');
+				}
+				move.init(tids, null, onCommandComplete);
+			});
+
+			return false;
+		});
+
+		components.get('topic/move-all').on('click', function () {
+			const cid = ajaxify.data.cid;
+			if (!ajaxify.data.template.category) {
+				return alerts.error('[[error:invalid-data]]');
+			}
+			require(['forum/topic/move'], function (move) {
+				move.init(null, cid, function (err) {
+					if (err) {
+						return alerts.error(err);
+					}
+
+					ajaxify.refresh();
+				});
+			});
+		});
+
+		components.get('topic/merge').on('click', function () {
+			const tids = topicSelect.getSelectedTids();
+			require(['forum/topic/merge'], function (merge) {
+				merge.init(function () {
+					if (tids.length) {
+						tids.forEach(function (tid) {
+							merge.addTopic(tid);
+						});
+					}
+				});
+			});
+		});
+
+		components.get('topic/tag').on('click', async function () {
+			const tids = topicSelect.getSelectedTids();
+			if (!tids.length) {
+				return alerts.error('[[error:no-topics-selected]]');
+			}
+			const topics = await Promise.all(tids.map(tid => api.get(`/topics/${tid}`)));
+			require(['forum/topic/tag'], function (tag) {
+				tag.init(topics, ajaxify.data.tagWhitelist, onCommandComplete);
+			});
+		});
+
+	}
+
+
 
 	function resetEventListeners(){
 		CategoryTools.removeListeners();
