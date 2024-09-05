@@ -31,7 +31,6 @@ define('forum/category/tools', [
 
 	function eventHandlers() {
 		components.get('topic/delete').on('click', function () {
-			console.log('yayyy elaine');
 			categoryCommand('del', '/state', 'delete', onDeleteRestoreComplete);
 			return false;
 		});
